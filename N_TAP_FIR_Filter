@@ -13,6 +13,7 @@ input [15:0] data_in;
 output [15:0] data_out;
 
 reg [6:0] count;
+reg [6:0] count_afterram;
 reg wen;
 
 reg [15:0] xn [`FIR_tap-1:0];
@@ -56,6 +57,29 @@ always @ (posedge clk_FAST)
 begin
 	if(rst == 1)
 		count <= 0;
+	else
+		if(count < 8)
+			count <= count+1;
+		else
+			count <= 1;
+end
+
+//counter count_afterram
+always @ (posedge clk_FAST)
+begin
+	if(rst == 1)
+		count_afterram <= 0;
+	else
+		if(count_afterram < 9)
+			count_afterram <= count_afterram+1;
+		else
+			count_afterram <= 2;
+end
+
+always @ (posedge clk_FAST)
+begin
+	if(rst == 1)
+		count <= 1;
 	else
 		if(count < 8)
 			count <= count+1;
@@ -153,16 +177,12 @@ begin
 		end
 	else
 		begin
-			con[count-2] <= d_ram_out;
+			con[count_afterram-1] <= d_ram_out; //count_afterram
 		end
 end
 
 ///////////////////////////////////////////////
 
-
-
-
-/*
 integer k;
 //mac
 always @ (posedge clk)
@@ -176,7 +196,7 @@ begin
 		begin
 		mac[0] = prod[0];
 			for(k=1; k<=`temporary_FIR_TAP; k=k+1)
-				mac[k] = mac[k-1] + prod[k]; 
+				mac[k] = mac[k-1] + con[k]; 
 		end
 end
 
@@ -195,5 +215,5 @@ begin
 			data_out <= yn[15:0];
 		end
 end
-*/
+
 endmodule
