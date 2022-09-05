@@ -1,0 +1,36 @@
+`timescale 1ns / 1ps
+`define CPS 3
+`define simul_TIME 32 //직접 계산해서 지정해줘야함 
+//////////////////////////////////////////////////////////////////////////////////
+module tb_N_TAP_FIR_Filter;
+reg clk,clk_FAST, rst;
+reg [15:0] data_in;
+wire [15:0] data_out;
+
+N_TAP_FIR_Filter u1(
+.clk(clk),
+.clk_FAST(clk_FAST),
+.rst(rst),
+.data_in(data_in),
+.data_out(data_out)
+);
+
+always begin #16 clk=~clk; end
+always begin #1 clk_FAST=~clk_FAST; end
+
+initial begin
+clk=1; clk_FAST=1; rst=1; data_in=0;
+#`simul_TIME rst = 0; data_in = 1;
+#`simul_TIME rst = 0; data_in = 2;
+#`simul_TIME rst = 0; data_in = 0;
+#`simul_TIME rst = 0; data_in = 0;
+#`simul_TIME rst = 0; data_in = 0;
+#`simul_TIME rst = 0; data_in = 0;
+#`simul_TIME rst = 0; data_in = 0;
+#`simul_TIME rst = 0; data_in = 0;
+#`simul_TIME rst = 0; data_in = 0;
+#`simul_TIME rst = 0; data_in = 0;
+#400 $finish;
+end
+
+endmodule
