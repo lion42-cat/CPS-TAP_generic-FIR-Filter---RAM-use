@@ -1,0 +1,25 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+module RAM_32by16(clk, wen, addr, din, dout);
+input clk;
+input wen;
+input [5:0] addr;
+input [15:0] din;
+output [15:0] dout;
+reg [15:0] data[0:31];
+
+reg [5:0] addr_reg;
+
+always @ (posedge clk) 
+begin
+	if(wen == 1'b0)
+		begin
+			data[addr] <= din;  //csn이 0이고, wen이 0이면 data 입력
+		end
+	addr_reg <= addr;
+end
+
+assign dout = data[addr_reg];
+
+
+endmodule
