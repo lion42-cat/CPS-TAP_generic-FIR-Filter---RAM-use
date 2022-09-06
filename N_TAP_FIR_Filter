@@ -1,6 +1,7 @@
 `timescale 1ns / 1ps
 `define FIR_tap 16            //FIR_TAP
 `define temporary_FIR_TAP 7   //직접 계산하여 지정해줘야함
+`define CPS 3
 //FIR_tap이 홀수면 temporary_FIR_TAP <= (`FIR_tap /2)  소숫점 버림;
 //FIR_tap이 짝수면 temporary_FIR_TAP <= ((`FIR_tap /2) - 1);
 
@@ -12,8 +13,11 @@ input clk, clk_FAST, rst;
 input [15:0] data_in;
 output [15:0] data_out;
 
+input [15:0] data_in_1clk;
+
 reg [6:0] count;
 reg [6:0] count_afterram;
+reg [6:0] input_data_count;
 reg wen;
 
 reg [15:0] xn [`FIR_tap-1:0];
@@ -70,21 +74,7 @@ begin
 	if(rst == 1)
 		count_afterram <= 0;
 	else
-		if(count_afterram < 9)
-			count_afterram <= count_afterram+1;
-		else
-			count_afterram <= 2;
-end
-
-always @ (posedge clk_FAST)
-begin
-	if(rst == 1)
-		count <= 1;
-	else
-		if(count < 8)
-			count <= count+1;
-		else
-			count <= 1;
+		count_afterram <= count;
 end
 
 integer i;
@@ -183,20 +173,29 @@ end
 
 ///////////////////////////////////////////////
 
-integer k;
+
+
+
+
+
+
+
+
+
+integer m;
 //mac
 always @ (posedge clk)
 begin
 	if(rst == 1)
 		begin
-			for(k=0; k<=`temporary_FIR_TAP; k=k+1)
-				mac[k] = 0;
+			for(m=0; m<=`temporary_FIR_TAP; m=m+1)
+				mac[m] = 0;
 		end
 	else
 		begin
 		mac[0] = prod[0];
-			for(k=1; k<=`temporary_FIR_TAP; k=k+1)
-				mac[k] = mac[k-1] + con[k]; 
+			for(m=1; m<=`temporary_FIR_TAP; m=m+1)
+				mac[m] = mac[m-1] + con[m]; 
 		end
 end
 
